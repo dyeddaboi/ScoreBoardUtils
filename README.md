@@ -1,5 +1,5 @@
 # ScoreboardUtils #
-A universal way to change ScoreBoard name Colors!
+A universal way to change ScoreBoard name colors!
 ## Usage ##
 Simply add as a dependency (or perferably add as an embedded resource. No credit required!), and it's ready for use.
 I encourage making this an embedded resource instead of a reference, no one likes when they have to download external libraries.
