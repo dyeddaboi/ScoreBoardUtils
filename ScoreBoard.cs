@@ -1,15 +1,19 @@
-﻿using BepInEx;
+﻿using MelonLoader;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using ScoreboardUtils;
+
+[assembly: MelonInfo(typeof(ScoreBoard), "ScoreBoardUtils", "1.0.0", "Lofiat")]
+[assembly: MelonGame("", "")]
 
 namespace ScoreboardUtils
 {
-	[BepInPlugin("Lofiat.ScoreBoardUtils", "ScoreBoardUtils", "1.0.0")]
-	public class ScoreBoard : BaseUnityPlugin
+
+	public class ScoreBoard : MelonMod
     {
         public static Dictionary<Player, string> playerColors = new Dictionary<Player, string>();
         public static GorillaScoreBoard GorillaScoreBoardComp;
@@ -25,12 +29,12 @@ namespace ScoreboardUtils
         internal static bool ran;
         object obj;
 
-        void Start()
+        public override void OnLateInitializeMelon()
         {
             GorillaTagger.OnPlayerSpawned(OnGameInitialized);
         }
 
-        void Update()
+        public override void OnUpdate()
         {
             if (GameObject.Find("Environment Objects/LocalObjects_Prefab/Forest/ForestScoreboardAnchor/GorillaScoreBoard/Board Text") != null && !ran)
             {
