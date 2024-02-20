@@ -109,11 +109,11 @@ namespace ScoreboardUtils
             {
                 if (playerColors.ContainsKey(player.UserId))
                 {
-                    scoreBoardText = scoreBoardText + "\n" + GetPlayerColorString(player.UserId);
+                    scoreBoardText = scoreBoardText + "\n" + { GetPlayerColorString(player.UserId)};
                 }
                 else
                 {
-                    scoreBoardText = scoreBoardText + "\n" + NormalizeName(true, true, true, player.NickName);
+                    scoreBoardText = scoreBoardText + "\n" + { NormalizeName(true, true, true, player.NickName)};
                 }
             }
             ScoreBoardText = scoreBoardText;
@@ -136,7 +136,7 @@ namespace ScoreboardUtils
             if (Upper)
                 text = text.ToUpper();
 
-            return $" {text}"; //Space for fixing the "offset"
+            return text;
         }
     }
 }
