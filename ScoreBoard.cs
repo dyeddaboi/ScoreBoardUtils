@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.ComponentModel.Design;
+using GorillaNetworking;
 
 namespace ScoreboardUtils
 {
@@ -38,17 +39,20 @@ namespace ScoreboardUtils
                 OnGameInitialized();
                 ran = true;
             }
-            if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("gameMode", out obj))
+            if (PhotonNetwork.InRoom)
             {
-                string text = obj as string;
-                if (text != null)
+                if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("gameMode", out obj))
                 {
-                    initialGameMode = text;
+                    string text = obj as string;
+                    if (text != null)
+                    {
+                        initialGameMode = text;
+                    }
                 }
+                ScoreBoardTextComp.text = ScoreBoardText;
+                ScoreBoardTextComp.supportRichText = true;
+                ScoreBoardGen();
             }
-            ScoreBoardTextComp.text = ScoreBoardText;
-            ScoreBoardTextComp.supportRichText = true;
-            ScoreBoardGen();
         }
 
         internal static void OnGameInitialized()
@@ -92,7 +96,7 @@ namespace ScoreboardUtils
                 if (player.UserId == ID)
                 {
                     playerColors.TryGetValue(player.UserId, out colorBuffer);
-                    return "<color=#" + colorBuffer + ">" + NormalizeName(true, player.NickName) + "</color>";
+                    return "<color=#" + colorBuffer + ">" + NormalizeName(true, true, true, player.NickName) + "</color>";
                 }
             }
             return "Couldn't find color!";
@@ -109,24 +113,30 @@ namespace ScoreboardUtils
                 }
                 else
                 {
-                    scoreBoardText = scoreBoardText + "\n" + NormalizeName(true, player.NickName);
+                    scoreBoardText = scoreBoardText + "\n" + NormalizeName(true, true, true, player.NickName);
                 }
             }
             ScoreBoardText = scoreBoardText;
         }
 
-        public static string NormalizeName(bool doIt, string text)
+        public static string NormalizeName(bool Upper, bool Short, bool BadName, string text)
         {
-            if (doIt)
+            if (Short)
             {
                 text = new string(Array.FindAll<char>(text.ToCharArray(), (char c) => char.IsLetterOrDigit(c)));
                 if (text.Length > 12)
                 {
                     text = text.Substring(0, 10);
                 }
-                text = text.ToUpper();
             }
-            return text;
+
+            if (!GorillaComputer.instance.CheckAutoBanListForName(text) && BadName) //Checks if the name is bypassed
+                text = "BADGORILLA";
+
+            if (Upper)
+                text = text.ToUpper();
+
+            return $" {text}"; //Space for fixing the "offset"
         }
     }
 }
