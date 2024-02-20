@@ -130,7 +130,7 @@ namespace ScoreboardUtils
                 }
             }
 
-            if (GorillaComputer.instance.CheckAutoBanListForName(text) && BadName) //Checks if the name is bypassed
+            if (!GorillaComputer.instance.CheckAutoBanListForName(text) && BadName) //Checks if the name is bypassed
                 text = "BADGORILLA";
 
             if (Upper)
