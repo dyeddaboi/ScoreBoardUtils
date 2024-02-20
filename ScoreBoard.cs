@@ -96,7 +96,7 @@ namespace ScoreboardUtils
                 if (player.UserId == ID)
                 {
                     playerColors.TryGetValue(player.UserId, out colorBuffer);
-                    return "<color=#" + colorBuffer + ">" + player.NickName + "</color>";
+                    return "<color=#" + colorBuffer + ">" + NormalizeName(true, true, true, player.NickName) + "</color>";
                 }
             }
             return "Couldn't find color!";
@@ -109,7 +109,7 @@ namespace ScoreboardUtils
             {
                 if (playerColors.ContainsKey(player.UserId))
                 {
-                    scoreBoardText = scoreBoardText + "\n" + NormalizeName(true, true, true, GetPlayerColorString(player.UserId));
+                    scoreBoardText = scoreBoardText + "\n" + GetPlayerColorString(player.UserId);
                 }
                 else
                 {
@@ -130,7 +130,7 @@ namespace ScoreboardUtils
                 }
             }
 
-            if (!GorillaComputer.instance.CheckAutoBanListForName(text) && BadName) //Checks if the name is bypassed
+            if (GorillaComputer.instance.CheckAutoBanListForName(text) && BadName) //Checks if the name is bypassed
                 text = "BADGORILLA";
 
             if (Upper)
