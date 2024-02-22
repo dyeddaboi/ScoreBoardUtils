@@ -13,7 +13,6 @@ using GorillaNetworking;
 
 namespace ScoreboardUtils
 {
-
 	public class ScoreBoard : MelonMod
     {
         public static Dictionary<string, string> playerNickNames = new Dictionary<string, string>();
