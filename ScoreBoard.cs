@@ -1,11 +1,10 @@
-using BepInEx;
+﻿using BepInEx;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using System.ComponentModel.Design;
 using GorillaNetworking;
 
 namespace ScoreboardUtils
@@ -13,7 +12,9 @@ namespace ScoreboardUtils
 	[BepInPlugin("Lofiat.ScoreBoardUtils", "ScoreBoardUtils", "1.0.0")]
 	public class ScoreBoard : BaseUnityPlugin
     {
+        public static Dictionary<string, string> playerNickNames = new Dictionary<string, string>();
         public static Dictionary<string, string> playerColors = new Dictionary<string, string>();
+        public static List<string> changedPlayers = new List<string>();
         public static GorillaScoreBoard GorillaScoreBoardComp;
         internal static string initialGameMode = "NONE";
         public static GameObject ScoreBoardTextObject;
@@ -22,21 +23,17 @@ namespace ScoreboardUtils
         internal static List<string> gmNames;
         public static string ScoreBoardText;
         internal static string colorBuffer;
+        internal static string nameBuffer;
         internal static string tempGmName;
         internal static string gmName;
         internal static bool ran;
         object obj;
 
-        void Start()
-        {
-            GorillaTagger.OnPlayerSpawned(OnGameInitialized);
-        }
-
         void Update()
         {
             if (GameObject.Find("Environment Objects/LocalObjects_Prefab/Forest/ForestScoreboardAnchor/GorillaScoreBoard/Board Text") != null && !ran)
             {
-                OnGameInitialized();
+                BoardInitialized();
                 ran = true;
             }
             if (PhotonNetwork.InRoom)
@@ -55,7 +52,7 @@ namespace ScoreboardUtils
             }
         }
 
-        internal static void OnGameInitialized()
+        internal static void BoardInitialized()
         {
             ScoreBoardTextObject = GameObject.Find("Environment Objects/LocalObjects_Prefab/Forest/ForestScoreboardAnchor/GorillaScoreBoard/Board Text");
             ScoreBoardTextComp = ScoreBoardTextObject.GetComponent<Text>();
@@ -64,12 +61,42 @@ namespace ScoreboardUtils
 
         public static void SetNameColorFromID(string ID, string colorhex)
         {
-            playerColors.Add(ID, colorhex);
+            if (!playerColors.ContainsKey(ID))
+            {
+                playerColors.Add(ID, colorhex);
+                changedPlayers.Add(ID);
+            }
+            else
+            {
+                playerColors.Remove(ID);
+                playerColors.Add(ID, colorhex);
+            }
         }
 
         public static void RemoveNameColorFromID(string ID)
         {
             playerColors.Remove(ID);
+            changedPlayers.Remove(ID);
+        }
+
+        public static void SetNickNameFromID(string ID, string NickName)
+        {
+            if (!playerNickNames.ContainsKey(ID))
+            {
+                playerNickNames.Add(ID, NickName);
+                changedPlayers.Add(ID);
+            }
+            else
+            {
+                playerNickNames.Remove(ID);
+                playerNickNames.Add(ID, NickName);
+            }
+        }
+
+        public static void RemoveNickNameFromID(string ID)
+        {
+            playerNickNames.Remove(ID);
+            changedPlayers.Remove(ID);
         }
 
         private static string RoomType()
@@ -89,17 +116,27 @@ namespace ScoreboardUtils
             return gmName;
         }
 
-        public static string GetPlayerColorString(string ID)
+        public static string GetPlayerNameString(string ID)
         {
             foreach (Player player in PhotonNetwork.PlayerList)
             {
                 if (player.UserId == ID)
                 {
-                    playerColors.TryGetValue(player.UserId, out colorBuffer);
-                    return "<color=#" + colorBuffer + ">" + NormalizeName(true, true, true, player.NickName) + "</color>";
+                    if (playerColors.TryGetValue(player.UserId, out colorBuffer) && playerNickNames.TryGetValue(player.UserId, out nameBuffer))
+                    {
+                        return "<color=#" + colorBuffer + ">" + nameBuffer + "</color>";
+                    }
+                    if (playerColors.TryGetValue(player.UserId, out colorBuffer))
+                    {
+                        return "<color=#" + colorBuffer + ">" + NormalizeName(true, true, true, player.NickName) + "</color>";
+                    }
+                    if (playerNickNames.TryGetValue(player.UserId, out nameBuffer))
+                    {
+                        return nameBuffer;
+                    }
                 }
             }
-            return "Couldn't find color!";
+            return "Couldn't get name!";
         }
 
         public static void ScoreBoardGen()
@@ -107,13 +144,13 @@ namespace ScoreboardUtils
             scoreBoardText = "ROOM ID: " + ((!PhotonNetwork.CurrentRoom.IsVisible) ? "-PRIVATE- GAME MODE: " : (PhotonNetwork.CurrentRoom.Name + "    GAME MODE: ")) + RoomType() + "\n   PLAYER      COLOR   MUTE   REPORT";
             foreach (Player player in PhotonNetwork.PlayerList)
             {
-                if (playerColors.ContainsKey(player.UserId))
+                if (playerColors.ContainsKey(player.UserId) || playerNickNames.ContainsKey(player.UserId))
                 {
-                    scoreBoardText = scoreBoardText + "\n" + { GetPlayerColorString(player.UserId)};
+                    scoreBoardText = scoreBoardText + "\n" + " " + GetPlayerNameString(player.UserId);
                 }
                 else
                 {
-                    scoreBoardText = scoreBoardText + "\n" + { NormalizeName(true, true, true, player.NickName)};
+                    scoreBoardText = scoreBoardText + "\n" + " " + NormalizeName(true, true, true, player.NickName);
                 }
             }
             ScoreBoardText = scoreBoardText;
