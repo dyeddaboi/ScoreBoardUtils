@@ -2,10 +2,13 @@
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 using GorillaNetworking;
+using HarmonyLib;
+using System.Reflection;
 
 namespace ScoreboardUtils
 {
@@ -17,8 +20,7 @@ namespace ScoreboardUtils
         public static List<string> changedPlayers = new List<string>();
         public static GorillaScoreBoard GorillaScoreBoardComp;
         internal static string initialGameMode = "NONE";
-        public static GameObject ScoreBoardTextObject;
-        internal static Text ScoreBoardTextComp;
+        public static GorillaScoreBoard currentScoreBoard;
         internal static string scoreBoardText;
         internal static List<string> gmNames;
         public static string ScoreBoardText;
@@ -28,35 +30,27 @@ namespace ScoreboardUtils
         internal static string gmName;
         internal static bool ran;
         object obj;
+        void Start() => new Harmony("Lofiat.ScoreBoardUtils").PatchAll(Assembly.GetExecutingAssembly());
 
         void Update()
         {
-            if (GameObject.Find("Environment Objects/LocalObjects_Prefab/Forest/ForestScoreboardAnchor/GorillaScoreBoard/Board Text") != null && !ran)
-            {
-                BoardInitialized();
-                ran = true;
-            }
             if (PhotonNetwork.InRoom)
             {
-                if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("gameMode", out obj))
+            if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("gameMode", out obj))
+            {
+                string text = obj as string;
+                if (text != null)
                 {
-                    string text = obj as string;
-                    if (text != null)
-                    {
-                        initialGameMode = text;
-                    }
+                    initialGameMode = text;
                 }
-                ScoreBoardTextComp.text = ScoreBoardText;
-                ScoreBoardTextComp.supportRichText = true;
-                ScoreBoardGen();
+            }
             }
         }
 
-        internal static void BoardInitialized()
+        //the only purpose of this is to make this more accesable
+        public static void UpdateScoreboard()
         {
-            ScoreBoardTextObject = GameObject.Find("Environment Objects/LocalObjects_Prefab/Forest/ForestScoreboardAnchor/GorillaScoreBoard/Board Text");
-            ScoreBoardTextComp = ScoreBoardTextObject.GetComponent<Text>();
-            GorillaScoreBoardComp = ScoreBoardTextObject.GetComponent<GorillaScoreBoard>();
+            currentScoreBoard.RedrawPlayerLines();
         }
 
         public static void SetNameColorFromID(string ID, string colorhex)
@@ -136,12 +130,12 @@ namespace ScoreboardUtils
                     }
                 }
             }
-            return "Couldn't get name!";
+            return "Couldn't get name string!";
         }
 
         public static void ScoreBoardGen()
         {
-            scoreBoardText = "ROOM ID: " + ((!PhotonNetwork.CurrentRoom.IsVisible) ? "-PRIVATE- GAME MODE: " : (PhotonNetwork.CurrentRoom.Name + "    GAME MODE: ")) + RoomType() + "\n   PLAYER      COLOR   MUTE   REPORT";
+            scoreBoardText = "TEST ID: " + ((!PhotonNetwork.CurrentRoom.IsVisible) ? "-PRIVATE- GAME MODE: " : (PhotonNetwork.CurrentRoom.Name + "    GAME MODE: ")) + RoomType() + "\n   PLAYER      COLOR   MUTE   REPORT";
             foreach (Player player in PhotonNetwork.PlayerList)
             {
                 if (playerColors.ContainsKey(player.UserId) || playerNickNames.ContainsKey(player.UserId))
