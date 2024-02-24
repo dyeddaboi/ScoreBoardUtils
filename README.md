@@ -11,3 +11,7 @@ Similar to colors, you can change Nicknames using a simple Method, "SetNickNameF
 All text can be put into leaderboard format by calling "NormalizeName(isUpperCase? isTruncated? addBadNameFilter? "text")", the first 3 bools can be used to configure the way that the text is normalized.
 ## Making External ScoreBoards ##
 If you want to use the base ScoreBoard text, just use "ScoreBoardText", otherwise, you can get the player color by getting their value in the playerColors dictionary. You can Get the full, normalized, colored name by running "GetPlayerColorString(Player type or ID)"
+## Refreshing The Scoreboard ##
+If for whatever reason you need to update the scoreboard text manually, you can do so by calling the method "UpdateScoreboard()".
+
+ScoreBoardUtils by Lofiat is marked with CC0 1.0. To view a copy of this license, visit http://creativecommons.org/publicdomain/zero/1.0
