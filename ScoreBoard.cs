@@ -3,8 +3,6 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
 using System;
-using UnityEngine;
-using UnityEngine.UI;
 using ScoreboardUtils;
 using GorillaNetworking;
 
@@ -20,8 +18,7 @@ namespace ScoreboardUtils
         public static List<string> changedPlayers = new List<string>();
         public static GorillaScoreBoard GorillaScoreBoardComp;
         internal static string initialGameMode = "NONE";
-        public static GameObject ScoreBoardTextObject;
-        internal static Text ScoreBoardTextComp;
+        public static GorillaScoreBoard currentScoreBoard;
         internal static string scoreBoardText;
         internal static List<string> gmNames;
         public static string ScoreBoardText;
@@ -34,11 +31,6 @@ namespace ScoreboardUtils
 
         public override void OnUpdate()
         {
-            if (GameObject.Find("Environment Objects/LocalObjects_Prefab/Forest/ForestScoreboardAnchor/GorillaScoreBoard/Board Text") != null && !ran)
-            {
-                BoardInitialized();
-                ran = true;
-            }
             if (PhotonNetwork.InRoom)
             {
                 if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("gameMode", out obj))
@@ -49,16 +41,13 @@ namespace ScoreboardUtils
                         initialGameMode = text;
                     }
                 }
-                ScoreBoardTextComp.text = ScoreBoardText;
-                ScoreBoardTextComp.supportRichText = true;
-                ScoreBoardGen();
             }
         }
-        internal static void BoardInitialized()
+
+        //the only purpose of this is to make this more accesable
+        public static void UpdateScoreboard()
         {
-            ScoreBoardTextObject = GameObject.Find("Environment Objects/LocalObjects_Prefab/Forest/ForestScoreboardAnchor/GorillaScoreBoard/Board Text");
-            ScoreBoardTextComp = ScoreBoardTextObject.GetComponent<Text>();
-            GorillaScoreBoardComp = ScoreBoardTextObject.GetComponent<GorillaScoreBoard>();
+            currentScoreBoard.RedrawPlayerLines();
         }
 
         public static void SetNameColorFromID(string ID, string colorhex)
