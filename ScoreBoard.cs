@@ -56,11 +56,13 @@ namespace ScoreboardUtils
             {
                 playerColors.Add(ID, colorhex);
                 changedPlayers.Add(ID);
+                currentScoreBoard.RedrawPlayerLines();
             }
             else
             {
                 playerColors.Remove(ID);
                 playerColors.Add(ID, colorhex);
+                currentScoreBoard.RedrawPlayerLines();
             }
         }
 
@@ -68,6 +70,7 @@ namespace ScoreboardUtils
         {
             playerColors.Remove(ID);
             changedPlayers.Remove(ID);
+            currentScoreBoard.RedrawPlayerLines();
         }
 
         public static void SetNickNameFromID(string ID, string NickName)
@@ -76,11 +79,13 @@ namespace ScoreboardUtils
             {
                 playerNickNames.Add(ID, NickName);
                 changedPlayers.Add(ID);
+                currentScoreBoard.RedrawPlayerLines();
             }
             else
             {
                 playerNickNames.Remove(ID);
                 playerNickNames.Add(ID, NickName);
+                currentScoreBoard.RedrawPlayerLines();
             }
         }
 
@@ -88,6 +93,7 @@ namespace ScoreboardUtils
         {
             playerNickNames.Remove(ID);
             changedPlayers.Remove(ID);
+            currentScoreBoard.RedrawPlayerLines();
         }
 
         private static string RoomType()
