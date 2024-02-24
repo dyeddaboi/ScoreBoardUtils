@@ -135,7 +135,7 @@ namespace ScoreboardUtils
 
         public static void ScoreBoardGen()
         {
-            scoreBoardText = "TEST ID: " + ((!PhotonNetwork.CurrentRoom.IsVisible) ? "-PRIVATE- GAME MODE: " : (PhotonNetwork.CurrentRoom.Name + "    GAME MODE: ")) + RoomType() + "\n   PLAYER      COLOR   MUTE   REPORT";
+            scoreBoardText = "ROOM ID: " + ((!PhotonNetwork.CurrentRoom.IsVisible) ? "-PRIVATE- GAME MODE: " : (PhotonNetwork.CurrentRoom.Name + "    GAME MODE: ")) + RoomType() + "\n   PLAYER      COLOR   MUTE   REPORT";
             foreach (Player player in PhotonNetwork.PlayerList)
             {
                 if (playerColors.ContainsKey(player.UserId) || playerNickNames.ContainsKey(player.UserId))
