@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using ScoreboardUtils;
 using GorillaNetworking;
+using GorillaGameModes;
 
 [assembly: MelonInfo(typeof(ScoreBoard), "ScoreBoardUtils", "1.0.0", "Lofiat")]
 [assembly: MelonGame("", "")]
