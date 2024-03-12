@@ -10,6 +10,7 @@ namespace ScoreboardUtils
             ScoreBoard.currentScoreBoard = __instance;
             ScoreBoard.ScoreBoardGen();
             __instance.boardText.text = ScoreBoard.ScoreBoardText;
+            __instance.boardText.supportRichText = true;
         }
     }
 }
